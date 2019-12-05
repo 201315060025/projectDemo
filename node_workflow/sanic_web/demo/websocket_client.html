@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+    <head>
+        <meta charset="utf-8">
+        <title>WebSocket demo</title>
+    </head>
+    <body style="height: 100%; margin: 0">
+        <div id="container" style="height: 100%"></div>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/dataTool.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
+
+        <script>
+            var ws = new WebSocket("ws://127.0.0.1:9010/");
+            ws.onmessage = function (event) {
+
+                var dom = document.getElementById("container");
+                var myChart = echarts.init(dom);
+                var app = {};
+                var l = screen.height;
+                var w =  screen.width;
+                option = null;
+                option = {
+                    title: {
+                        text: 'Graph 简单示例'
+                    },
+                    color: ['#c23531','#2f4554', '#61a0a8', '#d48265', '#91c7ae','#749f83',  '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'],
+                    tooltip: {},
+                    animationDurationUpdate: 1500,
+                    animationEasingUpdate: 'quinticInOut',
+                    series : [
+                        {
+                            type: 'graph',
+                            layout: 'none',
+                            roam: true,
+                            label: {
+                                normal: {
+                                    show: true
+                                }
+                            },
+                            edgeSymbol: ['circle', 'arrow'],
+                            edgeSymbolSize: [4, 10],
+                            edgeLabel: {
+                                normal: {
+                                    textStyle: {
+                                        fontSize: 25
+                                    }
+                                }
+                            },
+                            data: [{
+                                name: 'dailyDataUpdate',
+                                x: 300,
+                                y: 300,
+                                symbol: 'roundRect',
+                                symbolSize:[150,50],
+                                itemStyle: {
+                                    color: '#2f4554'
+
+                                }
+                            }, {
+                                name: 'check_data_update',
+                                x: 800,
+                                y: 300,
+                                symbol: 'roundRect',
+                                symbolSize:[150,50]
+                            }, {
+                                name: 'update_factor_data',
+                                x: 550,
+                                y: 100,
+                                symbol: 'roundRect',
+                                symbolSize:[150,50]
+                            }, {
+                                name: 'sync_154',
+                                x: 550,
+                                y: 500,
+                                symbol: 'roundRect',
+                                symbolSize:[150,50]
+                            }],
+                            // links: [],
+                            links: [{
+                                source: 0,
+                                target: 1,
+                                symbolSize: [5, 20],
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        formatter: '2'
+                                    }
+                                },
+                                lineStyle: {
+                                    normal: {
+                                        curveness: 0.2,
+                                        // opacity: 1,
+                                        color: event.data
+                                    }
+                                }
+                            }, {
+                                source:0,
+                                target: 2,
+                                label: {
+                                    normal: {
+                                        show: true
+                                    }
+                                },
+                                lineStyle: {
+                                    // normal: { curveness: 0.0}
+                                    show: true,
+                                    curveness: -0.2
+
+                                }
+                            }, {
+                                source:0,
+                                target: 3
+                            }, {
+                                source: '节点2',
+                                target: '节点3'
+                            }, {
+                                source: '节点2',
+                                target: '节点4'
+                            }, {
+                                source: '节点1',
+                                target: '节点4'
+                            }],
+                            lineStyle: {
+                                normal: {
+                                    opacity: 1,
+                                    width: 2,
+                                    curveness: 0
+                                }
+                            }
+                        }
+                    ]
+                };
+                if (option && typeof option === "object") {
+                    myChart.setOption(option, true);}
+
+            };
+
+        </script>
+    </body>
+</html>
