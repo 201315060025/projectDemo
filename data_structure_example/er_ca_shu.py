@@ -58,7 +58,7 @@ class B_Tree:
             return
 
         self.inorder(node.right)
-        print(node.data, end='')
+        print(node.data, end=' ')
         self.inorder(node.left)
         pass
 
@@ -68,12 +68,23 @@ class B_Tree:
         :param node:
         :return:
         """
+        if node == None:
+            return
+        self.postorder(node.left)
+        print(node.data, end=" ")
+        self.postorder(node.right)
+
 
 if __name__ == '__main__':
     tree = B_Tree()
-    for ii in range(11):
+    for ii in range(6):
         tree.add(ii)
 
-    tree.preorder(tree.root)
-    print('\n'*2)
+    print("inorder..")
     tree.inorder(tree.root)
+    print('\n' * 2)
+    print("preorder..")
+    tree.preorder(tree.root)
+    print("\n"*2)
+    print("postorder..")
+    tree.postorder(tree.root)
