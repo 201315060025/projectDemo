@@ -1,3 +1,18 @@
+# encoding: utf-8
+"""
+单链表
+链表的基本操作：
+1: is_empty
+2: length
+3: travel 遍历
+4: 头部添加  add
+5: 尾部添加 append()
+6: 任意位置插入： insert()
+7: 删除节点 ： remove
+8: 查找节点 seache
+"""
+
+
 class SingleNode(object):
     def __init__(self, item):
         self.item = item
@@ -62,7 +77,8 @@ class SingleLinkList(object):
             node = SingleNode(item)
             pre = self._head
             count = 0
-            while count != pos:
+            # 此处不是循环链表， 如果插入索引的长度 大于 链表长度  没有条件pre ！= None 应该会报错。。。
+            while pre != None or count != pos:
                 count += 1
                 pre = pre.next
 
@@ -107,8 +123,14 @@ class SingleLinkList(object):
         return flag
 
 
-
-
-
-
-        pass
+if __name__ == "__main__":
+    single_link_list = SingleLinkList()
+    single_link_list.add(2)
+    single_link_list.add(4)
+    single_link_list.add(3)
+    print(f"single link list length = {single_link_list.length()}")
+    print(f"single link list null = {single_link_list.is_empty()}")
+    # 遍历
+    single_link_list.tracel()
+    #
+    pass

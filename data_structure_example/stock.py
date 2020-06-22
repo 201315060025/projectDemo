@@ -16,17 +16,22 @@ class Stock():
         self.items = []
 
     def size(self):
+        """长度"""
         return len(self.items)
 
     def is_empty(self):
+        """是否为空"""
         return self.items == []
 
     def push(self, data):
+        """尾部添加"""
         self.items.append(data)
 
     def peek(self):
+        """尾部元素"""
         return self.items[self.size()]
 
     def pop(self):
+        """返回栈顶元素"""
         return self.items.pop()
 
