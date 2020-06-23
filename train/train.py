@@ -86,14 +86,20 @@ todo: 4请结合restful原则设计一个URI：获取2019年12月，采购部的
 """
 def Design_api():
     """
-    eg: http://localhost?start_date="2019-01-01"&end_date="2019-01-01"& max_exp="10000"& min_max_exp="50000"*order=0
+    eg: http://localhost?start_date="2019-01-01"&end_date="2019-01-01"& max_exp="10000"& min_exp=50000&order=0"
+    parmes type
+    start_date str
+    end_date  str
+    max_exp  int
+    min_exp int
+    order int    0-True / 1 - False
     因为接口设计参数灵活，
     例如时间， 如果单独传入年或则月， 获取的数据时间比较固定不宜扩展。
     """
     pass
 
 """
-todo: 5数据库版本 oracle 11g，以下sql语句按顺序执行, 请问在非事务/事务两种方式下执行（执行前均认为tab_user已创建，无记录），name字段的值分别是什么，原因是什么。
+todo: 5数据库版本 oracle 11g,以下sql语句按顺序执行, 请问在非事务/事务两种方式下执行（执行前均认为tab_user已创建，无记录），name字段的值分别是什么，原因是什么。
 insert into tab_user (name) values('abc') ;
 update tab_user set name = 'efg';
 select name from tab_user;
@@ -137,8 +143,10 @@ def main():
         special_matrix(num)
 
     # test4
-    answer()
+    Design_api()
     # test5
+    answer()
+    # test6
     ergodic(".")
 
 main()
