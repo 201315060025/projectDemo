@@ -139,6 +139,6 @@ def main():
     # test4
     answer()
     # test5
-    #ergodic(".")
+    ergodic(".")
 
 main()
