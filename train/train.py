@@ -38,16 +38,16 @@ def fishing_basking(input_dt):
     if input_dt < st_dt:
         return "input datetime is invalid"
     try:
-        cur_dt = datetime.strptime(input_dt, "%Y-%M-%D")
+        cur_dt = datetime.strptime(input_dt, "%Y-%m-%d")
     except Exception as e:
         print("input datetime is invalid")
-        return False
-    total_day = (cur_dt - datetime.strptime(st_dt, "%Y-%M-%D")).days
+        return None
+    total_day = (cur_dt - datetime.strptime(st_dt, "%Y-%m-%d")).days
     fishing_or_basking = total_day % 5
     if fishing_or_basking < 3:
-        return "fishing"
+        print("fishing")
     else:
-        return "basking"
+        print("basking")
 
 
 """
@@ -139,4 +139,6 @@ def main():
     # test4
     answer()
     # test5
-    ergodic(".")
+    #ergodic(".")
+
+main()
