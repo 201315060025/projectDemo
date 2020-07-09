@@ -9,6 +9,10 @@ __new__的官方文档解释是：继承一些不可改变的class时
 """
 
 class Person(object):
+    """
+    str函数或者print函数调用时 = obj.__srt__()
+　　repr函数或者交互式解释器中调用时 = obj.__repr__()
+    """
     def __new__(cls, name, age):
         print("in __new__ called")
         return super(Person, cls).__new__(cls)
@@ -22,6 +26,9 @@ class Person(object):
         """对象的描述"""
         print("in __str__ called")
         return "<person:%s(%s)>"%(self.name, self.age)
+
+    def __repr__(self):
+        return 'repr:我叫{}，今年{}岁'.format(self.name, self.age)
 
 
 class SiglePerson:
@@ -123,7 +130,58 @@ class TmpTest:
         print("__exit__")
         self.f.close()
 
+class Test3(object):
+    """
+    可调用对象； 我们平时定义的函数，方法， 类都属于可调用对象； 但凡能拿都一对括号（）使用在身上的都是可调用对象；
+    如果实现了__call__（）方法就是可调用对象
+    """
+    def __init__(self, size, x, y):
+        self.x, self.y = x, y
+        self.size = size
 
+    def __call__(self, x, y):
+            '''改变实体的位置'''
+            self.x, self.y = x, y
+
+class CLanguage:
+    """
+    test:
+    clangs = CLanguage()
+    if hasattr(clangs,"name"):
+        print(hasattr(clangs.name,"__call__"))
+    print("**********")
+    if hasattr(clangs,"say"):
+        print(hasattr(clangs.say,"__call__"))
+    弥补hasttr 的缺点
+    hasttr 第二个参数可能是“属性”， 也可能是“方法”
+	所以当传入参数时， 返回值是True,
+    但是不能判断该参数是 “属性”还是“方法”
+    """
+    def __init__ (self):
+        self.name = "C语言中文网"
+        self.add = "http://c.biancheng.net"
+    def say(self):
+        print("我正在学Python")
+
+class Person2:
+    """
+    对象字段化操作
+    __getItem__, __setItem__, __deleteItem__
+    """
+    def __init__(self, name, age, hobby):
+        self.name = name
+        self.age = age
+        self.hobby = hobby
+
+    def __getitem__(self, item):
+        if hasattr(self, item):
+            return self.__dict__[item]
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
+
+    def __delitem__(self, key):
+        del self.__dict__[key]
 
 if __name__ == "__main__":
     pe = Person("blx",  "22")
@@ -155,6 +213,25 @@ if __name__ == "__main__":
     test = TmpTest("E://interviewTest//test//train//train.py")
     with test as t:
         print(t)
+
+    print("\n"*2)
+    print("可调用对象")
+    test_obj = Test3(3,4,5)
+    print("x={0}, y={1}".format(str(test_obj.x), str(test_obj.y)))
+    print("------------")
+    test_obj(33,44)
+    print("x={0}, y={1}".format(str(test_obj.x), str(test_obj.y)))
+
+    print("\n"*2)
+    print("对象属性字典化")
+    p = Person2("blx", "22", "pingpang")
+    print(p.name) # 通过原始方法获取
+    print(p["name"])  # 通过字典获取
+    p["name"] = "blx123"
+    print(p.__dict__)
+    del p["name"]
+    print(p.__dict__)
+
 
 
 
