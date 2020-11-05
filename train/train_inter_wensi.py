@@ -109,7 +109,70 @@ n=5
 5  6  7   8   9
 解答：
 """
-# 待定（2020-10-21提交）
+
+
+def rank_data(n):
+    """
+    生成一个三角形
+    1            limit_value
+    2 9          7
+    3 10 8       5
+    4 5  6 7     3
+    :param n:
+    :return:
+    """
+    if not n:
+        return None
+
+    # data = list(range(1, (1+n)/2))
+    limit_value = {
+        i: (n-1)-(i-n)*2 for i in list(range(1, n+1))[::-1] if i != 1
+    }
+    res = []
+    for i in range(1, n+1):
+        res.append([0]*i)
+
+    for i in range(1, n+1):
+        # i 是行数
+        if i == n:
+            # 最后一行规律比较明显
+            res[i-1] = [i for i in range(i, i+limit_value[i]+1)]
+        else:
+            v = res[i-1]
+            if 0 not in v:
+                continue
+
+            if len(v) == 1:
+                res[i-1] = [i]
+                continue
+            if len(v) == 2:
+                res[i-1] = [i, i+limit_value[i]]
+                continue
+
+            first_num = i
+            last_num = i + limit_value[i]
+            tmp_res = []
+            for j in range(i):
+                if j == 0:
+                    # 如果是第一个元素
+                    tmp_res.append(first_num)
+                    pass
+                elif j == i -1:
+                    # 如果是最后一个元素
+                    tmp_res.append(last_num)
+                    pass
+                elif j == 1:
+                    tmp_res.append(res[i - 2][1]+1)
+                else:
+                    tmp_res.append(tmp_res[j-1]+1)
+                    pass
+            res[i-1] = tmp_res
+
+    for dt in res:
+        print(", ".join([str(ii) for ii in dt]))
+
+rank_data(5)
+
 
 
 """
