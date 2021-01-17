@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>docker env_id 统计</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://how2j.cn/study/js/jquery/2.0.0/jquery.min.js"></script>
+<link href="https://how2j.cn/study/css/bootstrap/3.3.6/bootstrap.min.css" rel="stylesheet">
+<script src="https://how2j.cn/study/js/bootstrap/3.3.6/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <div class="jumbotron">
+    <h2>docker env_id 统计</h2>
+<!--    <p>重置窗口大小，查看响应式效果！</p>-->
+  </div>
+
+  <form class="form-inline" role="form" action="/save_data">
+  <div class="form-group">
+
+
+    <label for="firstname" class="col-sm-3 control-label">名字</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="firstname" name="name" placeholder="请输入名字">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-3 control-label">ip</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="lastname" name="ip" placeholder="*.*.*.*">
+    </div>
+  </div>
+    <div class="form-group">
+    <label for="lastname" class="col-sm-3 control-label">端口</label>
+    <div class="col-sm-9">
+      <input type="text" class="form-control" id="fname" name="port" placeholder="*** - **">
+    </div>
+  </div>
+
+    <div class="form-group">
+            <label class="radio-inline">
+                <input type="radio"  value="red" name="catgory" checked>红队
+            </label>
+            <label class="radio-inline">
+                <input type="radio"  value="blue" name="catgory">蓝队
+            </label>
+     </div>
+
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-2">
+      <button type="submit" class="btn btn-default">添加</button>
+    </div>
+  </div>
+
+</form>
+
+  <br/>
+  <div class="row" style="margin:auto">
+
+    {% for name in name_list %}
+    <div class="col-sm-9" style="background-color: {{ color_map[name] }} ">
+      <h3>{{name}}</h3>
+      {% for ip in name_detail[name] %}
+      <p><b>ip:</b>&nbsp;&nbsp; {{ip.ip}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  <b>port:</b>&nbsp;&nbsp;  {{ip.port}} </p>
+      {% endfor %}
+
+    </div>
+    <div class="col-sm-3">
+      <button type="button" class="btn btn-danger" name={{ name }} id="delete" onclick='delete_data(" {{ name }} ")'>删除记录</button>
+      <script>
+        function delete_data(name){
+          console.log("/delete/"+name);
+          $.ajax({url:"/delete/"+name.trim(), async:false});
+          location.reload("/")
+        }
+
+      </script>
+
+    </div>
+    <div class="divider"></div>
+<!--    <p></p>-->
+    {% endfor %}
+
+<!--    <div class="col-sm-12">-->
+<!--      <h3>blx</h3>-->
+<!--      <p>69: 200-300</p>-->
+<!--      <p>81: 200-300</p>-->
+<!--    </div>-->
+<!--    <div class="col-sm-4">-->
+<!--      <h3>第二列</h3>-->
+<!--      <p>学的不仅是技术，更是梦想！</p>-->
+<!--      <p>再牛逼的梦想,也抵不住你傻逼似的坚持！</p>-->
+<!--    </div>-->
+<!--    <div class="col-sm-4">-->
+<!--      <h3>第三列</h3>-->
+<!--      <p>学的不仅是技术，更是梦想！</p>-->
+<!--      <p>再牛逼的梦想,也抵不住你傻逼似的坚持！</p>-->
+<!--    </div>-->
+  </div>
+
+
+
+
+<!-- <div class="jumbotron">-->
+<!--  <h1 class="display-4">Hello, world!</h1>-->
+<!--  <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>-->
+<!--  <hr class="my-4">-->
+<!--  <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>-->
+<!--  <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>-->
+<!--</div>-->
+
+
+
+</div>
+
+</body>
+</html>
