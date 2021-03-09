@@ -1,5 +1,6 @@
 # encoding: utf-8
 """
+不同的方法 按照有顺序的执行
 url: https://leetcode-cn.com/problems/print-in-order/
 我们提供了一个类：
 
@@ -14,10 +15,6 @@ public class Foo {
 线程 B 将会调用 second() 方法
 线程 C 将会调用 third() 方法
 请设计修改程序，以确保 second() 方法在 first() 方法之后被执行，third() 方法在 second() 方法之后被执行。
-
-来源：力扣（LeetCode）
-链接：https://leetcode-cn.com/problems/print-in-order
-著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 """
 from threading import Thread,Lock, Semaphore, Condition
 from time import sleep
