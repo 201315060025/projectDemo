@@ -1,8 +1,11 @@
+import json
 
 from flask import Flask, request,jsonify
 from flask_cors import CORS
+import pickle
 
-app =Flask(__name__)
+app = Flask(__name__)
+CORS(app, resources="/*")
 
 @app.route('/')
 def hello_flask():
@@ -58,7 +61,9 @@ def policy_list():
 
 @app.route('/save-option', methods=['POST'])
 def save_option():
-    print(dict(request.values))
+    print('1111111111111111111111')
+    print(dict(request.data), dict(request.values) , dict(request.args))
+    # with open("res.pkl", 'rb')
 
     return {'status': 200, 'message': '', 'data': {'id': '123'}}
 
@@ -66,20 +71,37 @@ def save_option():
 
 @app.route('/get-option', methods=['GET'])
 def get_option():
-    print(dict(request.args))
+    print('2222222222222222222')
+    print(dict(request.data), dict(request.values), dict(request.args))
     res = {
-        "taskName": "名称",
-        "taskModel": "12",
-        "startTime": "2020 - 01 - 0100: 00:00",
-        "endTime": "2020 - 01 - 01 10: 00:00",
+        "taskName": "",
+        "taskModel": " ",
+
+        "startTime": ["D+1", "00:00"],
+        "endTime": ["D+2", "00:00"],
         "tartget": ["雷达1", "雷达2"],
         # "resource": {"歼击机": 10,  "轰炸机": 20},
-        "resource": [{"id": 1, "name": "歼击机", "values": 10}, {"id": 2, "name": "轰炸机", "values": 20}],
+        "resource": [{"id": 1, "name": "歼击机1111", "values": 10}, {"id": 2, "name": "轰炸机", "values": 20}],
         "expectResult": [{"id": 2, "name": "红方力量", "values": 20}]
 
     }
 
-    return {'status': 200,'message': '', 'data': res}
+    res = {
+        "taskName": "",
+        "taskModel": " ",
+
+        "startTime": ["","0:00"],
+        "endTime": ["","0:00"],
+        "tartget": [],
+        # "resource": {"歼击机": 10,  "轰炸机": 20},
+        "resource": [],
+        "expectResult": []
+
+    }
+
+
+    return {'status': 200, 'message': "", 'data': res}
+    # return {"data": "hell world"}
 
 
 
@@ -109,20 +131,22 @@ def stage_data():
     res = {
         "taskName": "名称",
         "taskModel": "12",
-        "startTime": "2020 - 01 - 0100: 00:00",
-        "endTime": "2020 - 01 - 01 10: 00:00",
+        "startTime": ["D-1", "00:00"],
+        "endTime": ["D+2", "00:00"],
         "tartget": ["雷达1", "雷达2"],
         # "resource": {"歼击机": 10,  "轰炸机": 20},
         "resource": [{"id": 1, "name": "歼击机", "values": 10}, {"id": 2, "name": "轰炸机", "values": 20}],
-        "expectResult": [{"id": 2, "name": "红方力量", "values": 20}]
+        "expectResult": [{"id": 2, "name": "红方力量", "values": 20}],
+        "point_id": 1,
+        "id": 12
 
     }
 
-    return {'status': 200, 'message': '', 'data': [res]}
+    return jsonify([res])
 
 
 
 if __name__=='__main__':
 
-    app.run(host='127.0.0.1' ,port=5000)
+    app.run(host='0.0.0.0', port=8000)
 
