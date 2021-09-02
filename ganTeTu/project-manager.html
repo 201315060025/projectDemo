@@ -1,0 +1,394 @@
+<!doctype html>
+<html style="height:100%;font-size:14px;">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="./gc.spread.sheets.excel2013white.13.0.0.css">
+    <script src="./jquery-1.11.1.min.js" type="text/javascript"></script>
+    <script src="./gc.spread.sheets.all.13.0.0.min.js" type="text/javascript"></script>
+    <script src="./gc.spread.sheets.shapes.13.0.0.min.js" type="text/javascript"></script>
+    <script src="./gc.spread.sheets.resources.zh.13.0.0.min.js" type="text/javascript"></script>
+
+    <script src="./data.js" type="text/javascript"></script>
+    <style>
+        * {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }
+
+        .sample-tutorial {
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body style="margin:0;position:absolute;top:0;bottom:0;left:0;right:0;font-size:14px;user-select:none;-webkit-user-select: none;overflow:hidden;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'">
+    <div class="sample-tutorial">
+        <div id="ss" style="width:100%;height:100%"></div>
+    </div>
+    <script type="text/javascript">
+        var gcNS = GC.Spread.Sheets;
+        var BAR_HEIGHT = 30,
+            FORZEN_WIDTH = 0,
+            DEFAULT_ROW_HEIGHT = 35;
+        var GANNT_COLUMN_WIDTH = 300;
+        var maxLevelNum = 2;
+        //bar color
+        var colorBox = ["#d7bde5", "#3f7c50", "#c84028", "#6642b3", "#3866ba", "#FF69B4", "#e17000", "#c84028"];
+        //progessBar color
+        var progessColorBox = ["#ebdff1", "#a1bfa9", "#e4a094", "#b3a1d9", "#9fb6dd", "#fbcdaa", "#7FFFAA", "#CD6155"];
+        var colorIndex = 0,
+            colorProgessIndex = 0;
+
+
+        window.onload = function() {
+            var spread = new GC.Spread.Sheets.Workbook(document.getElementById("ss"));
+            spread.options.scrollByPixel = true;
+            spread.options.scrollPixel = 3;
+            var createGanntView = new CreateGannt(spread);
+            createGanntView.init();
+        }
+
+        var CreateGannt = (function() {
+            function CreateGannt(spread) {
+                this.spread = spread;
+            }
+            CreateGannt.prototype.init = function() {
+                var sheet = this.spread.getActiveSheet();
+                this.spread.suspendPaint();
+                this.processData();
+                this.bindData(sheet);
+                this.initSheetView(sheet, this.spread);
+                this.generateGanntFormula(sheet);
+                this.processGenerateGanntData(sheet);
+                this.addCellBorder(sheet);
+                this.progessBindValue(sheet);
+                this.spread.resumePaint();
+            };
+            CreateGannt.prototype.progessBindValue = function(sheet) {
+                sheet.bind(GC.Spread.Sheets.Events.CellChanged, function(e, target) {
+                    if (target.col === 4) {
+                        if (parseFloat(target.newValue).toString() === "NaN" ||
+                            (parseFloat(target.newValue).toString() !== "NaN" && (target.newValue > 1 || target.newValue < 0))) {
+                            sheet.setValue(target.row, target.col, target.oldValue);
+                        } else {
+                            sheet.shapes.get("gannt" + target.row + dataSource[target.row].id).text(
+                                dataSource[target.row].id + "  " +
+                                (parseFloat(GC.Spread.Sheets.CalcEngine.evaluateFormula(sheet, "Sheet1!$E$" + (target.row + 1))) * 100).toFixed(1) +
+                                "%"
+                            )
+                        }
+                    }
+                });
+            };
+            CreateGannt.prototype.addCellBorder = function(sheet) {
+                for (var i = 0; i < dataSource.length; i++) {
+                    var range = sheet.getRange(i, 0, 1, 1, 2);
+                    var range1 = sheet.getRange(i, 1, 1, 1, 3);
+                    if (dataSource[i].group) {
+                        range.borderRight(new gcNS.LineBorder(dataSource[i].color, gcNS.LineStyle.thick));
+                        range1.borderLeft(new gcNS.LineBorder(dataSource[i].color, gcNS.LineStyle.thick));
+                    } else {
+                        range.borderRight(new gcNS.LineBorder(dataSource[i].color, gcNS.LineStyle.thin));
+                        range1.borderLeft(new gcNS.LineBorder(dataSource[i].color, gcNS.LineStyle.thin));
+                    }
+                }
+            };
+            CreateGannt.prototype.processData = function() {
+                var color, progessColor;
+                for (var i = 0; i < dataSource.length; i++) {
+                    var dataRow = dataSource[i];
+                    if (maxLevelNum < dataRow.indent) {
+                        maxLevelNum = dataRow.indent;
+                    }
+                    if (dataSource[i + 1] && dataSource[i + 1].indent > dataRow.indent) {
+                        dataRow.group = true;
+                    }
+                    if (!dataRow.end) {
+                        dataRow.finish = true;
+                    }
+                    if (dataRow.group) {
+                        if (colorIndex > 7) {
+                            colorIndex = 0;
+                            colorProgessIndex = 0;
+                        }
+                        color = colorBox[colorIndex++];
+                        dataRow.color = color;
+                        progessColor = progessColorBox[colorProgessIndex++];
+                        dataRow.progessColor = progessColor;
+                    } else {
+                        dataRow.color = color;
+                        dataRow.progessColor = progessColor;
+                    }
+                }
+            };
+            CreateGannt.prototype.bindData = function(sheet) {
+                sheet.autoGenerateColumns = false;
+                sheet.setDataSource(dataSource);
+                var bindInfos = [{
+                        name: "id",
+                        displayName: "ID",
+                        size: 110,
+                        visible: false
+                    },
+                    {
+                        name: "name",
+                        displayName: "Task",
+                        size: 200
+                    },
+                    {
+                        name: "start",
+                        displayName: "Start Date",
+                        size: 90,
+                        formatter: "dd-mmm"
+                    },
+                    {
+                        name: "end",
+                        displayName: "End Date",
+                        size: 90,
+                        formatter: "dd-mmm"
+                    },
+                    {
+                        name: "progressValue",
+                        displayName: "Duration",
+                        size: 70
+                    },
+                    {
+                        name: "connectTo",
+                        displayName: "ConnectTo",
+                        size: 200,
+                        visible: false
+                    },
+                ];
+                for (var row = 0, count = sheet.getRowCount(); row < count; row++) {
+                    sheet.getCell(row, 1).textIndent(sheet.getDataItem(row).indent);
+                }
+                sheet.bindColumns(bindInfos);
+                bindInfos.forEach(function(info) {
+                    if (info.visible !== false) {
+                        FORZEN_WIDTH += info.size;
+                    }
+                })
+            };
+            CreateGannt.prototype.initSheetView = function(sheet, spread) {
+                spread.options.tabStripVisible = false;
+                spread.options.showHorizontalScrollbar = false;
+                var sheetAreaColHeader = gcNS.SheetArea.colHeader;
+                sheet.outlineColumn.options({
+                    columnIndex: 1,
+                    showIndicator: true,
+                    maxLevel: maxLevelNum,
+                    expandIndicator: "data:image/png;base64,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",
+                    collapseIndicator: "data:image/png;base64,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"
+                });
+                sheet.showRowOutline(false);
+
+                var style = new GC.Spread.Sheets.Style();
+                style.formatter = "0.0%";
+                style.hAlign = 1;
+                sheet.setStyle(-1, 4, style);
+
+                var style1 = this.getDateTimeDropDowns();
+                style1.hAlign = 1;
+                sheet.setStyle(-1, 2, style1);
+                sheet.setStyle(-1, 3, style1);
+                sheet.setStyle(-1, 4, style);
+                sheet.setStyle(-1, 4, style);
+
+                sheet.defaults.rowHeight = DEFAULT_ROW_HEIGHT;
+                var defaultStyle = sheet.getDefaultStyle();
+                defaultStyle.vAlign = gcNS.VerticalAlign.center;
+                sheet.setColumnCount(sheet.getColumnCount() + 4);
+                sheet.setRowCount(2, sheetAreaColHeader);
+                sheet.options.allowCellOverflow = false;
+                sheet.frozenColumnCount(6)
+                sheet.addSpan(0, 1, 2, 1, sheetAreaColHeader);
+                sheet.addSpan(0, 2, 2, 1, sheetAreaColHeader);
+                sheet.addSpan(0, 3, 2, 1, sheetAreaColHeader);
+                sheet.addSpan(0, 4, 2, 1, sheetAreaColHeader);
+                sheet.addSpan(0, 6, 1, 4, sheetAreaColHeader);
+                sheet.setValue(0, 6, "2010 Q1", sheetAreaColHeader);
+                sheet.setValue(1, 6, "January", sheetAreaColHeader);
+                sheet.setValue(1, 7, "February", sheetAreaColHeader);
+                sheet.setValue(1, 8, "March", sheetAreaColHeader);
+                sheet.setValue(1, 9, "April", sheetAreaColHeader);
+
+                sheet.setValue(0, 1, "Task", sheetAreaColHeader);
+                sheet.setValue(0, 2, "Start", sheetAreaColHeader);
+                sheet.setValue(0, 3, "End", sheetAreaColHeader);
+                sheet.setValue(0, 4, "Progress", sheetAreaColHeader);
+                var parent = sheet.getParent()
+                parent.options.scrollbarMaxAlign = true
+                for (var index = 6; index < 10; index++) {
+                    sheet.setColumnWidth(index, GANNT_COLUMN_WIDTH);
+                }
+                spread.options.allowUserResize = false;
+                spread.options.allowUserZoom = false;
+            };
+            CreateGannt.prototype.generateGanntFormula = function(sheet) {
+                var sheetAreaColHeader = gcNS.SheetArea.colHeader,
+                    spread = sheet.getParent();
+                spread.addCustomName("GANNT_WIDTH_UNIT", '=' + GANNT_COLUMN_WIDTH * 4 / 119);
+                spread.addCustomName("FIXED_DATAVIEW_OFFSET", '=' + FORZEN_WIDTH);
+                //@ is the place holder to apply row index.
+                var assistantColumns = [{
+                        col: 10,
+                        value: "X",
+                        formula: 'DATEDIF(DATE(YEAR(C@),1,1),C@,"YD")*GANNT_WIDTH_UNIT+FIXED_DATAVIEW_OFFSET'
+                    },
+                    {
+                        col: 11,
+                        value: "Y",
+                        formula: '(ROW()-1)*' + (DEFAULT_ROW_HEIGHT) + "+15"
+                    },
+                    {
+                        col: 12,
+                        value: "Width",
+                        formula: 'IFERROR(DATEDIF(C@,D@,"YD"),0)*GANNT_WIDTH_UNIT'
+                    },
+                ];
+                sheet.addColumns(sheet.getColumnCount(), assistantColumns.length);
+                assistantColumns.forEach(function(colInfo) {
+                    sheet.setValue(0, colInfo.col, colInfo.value, sheetAreaColHeader);
+                    sheet.setColumnVisible(colInfo.col, true);
+                    sheet.setFormatter(-1, colInfo.col, "00.0");
+                    for (var row = 0, count = sheet.getRowCount(); row < count; row++) {
+                        sheet.setFormula(row, colInfo.col, colInfo.formula.replace(/@/g, row + 1));
+                    }
+                });
+                //hide calculating data 
+                sheet.setColumnWidth(10, 0);
+                sheet.setColumnWidth(11, 0);
+                sheet.setColumnWidth(12, 0);
+            };
+            CreateGannt.prototype.processGenerateGanntData = function(sheet) {
+                var rowCount = sheet.getRowCount();
+                var ganntData = [];
+                for (var i = 0; i < rowCount; i++) {
+                    var gannt = {
+                        name: "gannt" + i,
+                        height: 25
+                    };
+                    gannt.x = "=" + sheet.name() + "!" + GC.Spread.Sheets.CalcEngine.rangeToFormula(new GC.Spread.Sheets.Range(i, 10, 1, 1));
+                    gannt.y = "=" + sheet.name() + "!" + GC.Spread.Sheets.CalcEngine.rangeToFormula(new GC.Spread.Sheets.Range(i, 11, 1, 1));
+                    gannt.width = "=" + sheet.name() + "!" + GC.Spread.Sheets.CalcEngine.rangeToFormula(new GC.Spread.Sheets.Range(i, 12, 1, 1));;
+                    gannt.type = dataSource[i].group ? GC.Spread.Sheets.Shapes.AutoShapeType.leftArrow :
+                        (dataSource[i].finish ? GC.Spread.Sheets.Shapes.AutoShapeType.flowchartDecision : GC.Spread.Sheets.Shapes.AutoShapeType.rectangle);
+                    gannt.color = dataSource[i].color;
+                    gannt.progessColor = dataSource[i].progessColor;
+                    gannt.height = 15;
+                    ganntData.push(gannt);
+                }
+                this.generateGanntBar(sheet, ganntData);
+            };
+            CreateGannt.prototype.getDateTimeDropDowns = function() {
+                var style = new GC.Spread.Sheets.Style();
+                style.cellButtons = [{
+                    imageType: GC.Spread.Sheets.ButtonImageType.dropdown,
+                    command: "openDateTimePicker",
+                    useButtonStyle: false,
+                    visibility: GC.Spread.Sheets.ButtonVisibility.onSelected
+                }];
+                style.hAlign = 1;
+                style.formatter = "dd-mmm";
+                style.dropDowns = [{
+                    type: GC.Spread.Sheets.DropDownType.dateTimePicker,
+                    option: {
+                        showTime: false,
+                    }
+                }];
+                return style;
+            }
+            CreateGannt.prototype.generateGanntBar = function(sheet, ganntInfos) {
+                ganntInfos.forEach((ganntInfo, index) => {
+                    var calcValue = GC.Spread.Sheets.CalcEngine.evaluateFormula;
+                    var width = calcValue(sheet, ganntInfo.width),
+                        shapeProgess;
+                    if (ganntInfo.type) {
+                        if (ganntInfo.type === 1) {
+                            shapeProgess = sheet.shapes.add(ganntInfo.name + "shapeProgess", ganntInfo.type);
+                            shapeProgess.x(ganntInfo.x);
+                            shapeProgess.y(calcValue(sheet, ganntInfo.y) + 1);
+                            shapeProgess.width(ganntInfo.width);
+                            shapeProgess.height(ganntInfo.height - 2);
+                            var styleProgess = shapeProgess.style();
+                            styleProgess.fill.color = ganntInfo.progessColor;
+                            styleProgess.fill.transparency = 0.05;
+                            styleProgess.line.transparency = 0;
+                            styleProgess.line.color = ganntInfo.color;
+                            shapeProgess.style(styleProgess);
+                            shapeProgess.allowResize(false);
+                            shapeProgess.allowMove(false);
+                        }
+                        if (ganntInfo.type === 34) {
+                            shapeProgess = sheet.shapes.add(ganntInfo.name + "shapeProgess", GC.Spread.Sheets.Shapes.AutoShapeType.leftRightArrow);
+                            shapeProgess.x(ganntInfo.x);
+                            shapeProgess.y(calcValue(sheet, ganntInfo.y));
+                            shapeProgess.width(ganntInfo.width);
+                            shapeProgess.height(ganntInfo.height + 5);
+                            var styleProgess = shapeProgess.style();
+                            styleProgess.fill.color = ganntInfo.progessColor;
+                            styleProgess.fill.transparency = 0.05;
+                            styleProgess.line.transparency = 0;
+                            styleProgess.line.color = ganntInfo.color;
+                            shapeProgess.style(styleProgess);
+                            shapeProgess.allowResize(false);
+                            shapeProgess.allowMove(false);
+                        }
+                        var shape = sheet.shapes.add(ganntInfo.name, ganntInfo.type);
+                        shape.x(width === 0 ? (ganntInfo.x + "-10") : ganntInfo.x);
+                        shape.y(ganntInfo.type === 34 ? calcValue(sheet, ganntInfo.y) :
+                            (width === 0 ? calcValue(sheet, ganntInfo.y) - 5 : calcValue(sheet, ganntInfo.y) + 1));
+                        shape.width(width === 0 ? ganntInfo.height + 14 : (ganntInfo.width + "*" + "Sheet1!$E$" + (index + 1)));
+                        shape.height(ganntInfo.type === 34 ? ganntInfo.height + 5 : ganntInfo.height - 2);
+                        var style = shape.style();
+                        style.fill.color = width === 0 ? "#EEE685" : ganntInfo.color;
+                        style.line.transparency = width === 0 ? 0 : 1;
+                        style.line.color = width === 0 ? "#8B864E" : ganntInfo.color;
+                        shape.style(style);
+
+                        //add shape desc
+                        if (dataSource[index]) {
+                            var shape1 = sheet.shapes.add(ganntInfo.name + dataSource[index].id, GC.Spread.Sheets.Shapes.AutoShapeType.rectangle);
+                            shape1.x(ganntInfo.x + "+" + parseInt(shape.width() / 2) + "+5");
+                            shape1.y(calcValue(sheet, ganntInfo.y) - 19);
+                            shape1.width(200);
+                            shape1.height(30);
+                            if (!dataSource[index].finish) {
+                                shape1.text(dataSource[index].id + "  " + (dataSource[index].progressValue * 100).toFixed(1) + "%");
+                            } else {
+                                shape1.text("end");
+                            }
+                            var style1 = shape1.style();
+                            style1.fill.transparency = 1;
+                            style1.fill.color = "transparency";
+                            style1.line.color = "transparency";
+                            style1.textEffect.color = "gray";
+                            style1.line.transparency = 1;
+                            shape1.style(style1);
+                        }
+                        //add shape line
+                        if (ganntInfo.type === 1 && ganntInfos[index + 1] && (ganntInfos[index + 1].type === 1 || ganntInfos[index + 1].type === 63)) {
+                            var connectorShape = sheet.shapes.add('shapeLine' + dataSource[index].id, 41);
+                            connectorShape.width(15);
+                            connectorShape.height(15);
+                            connectorShape.x(ganntInfos[index].x + "+" + "Sheet1!$M$" + (index + 1) + "+ 3");
+                            connectorShape.y(calcValue(sheet, ganntInfos[index].y) + 11);
+                            var connectorShapeStyle = connectorShape.style();
+                            connectorShapeStyle.line.transparency = 1;
+                            connectorShapeStyle.fill.color = "#A9A9A9";
+                            connectorShapeStyle.line.transparency = 1;
+                            connectorShape.style(connectorShapeStyle);
+                            connectorShape.rotate(90);
+                        }
+                    }
+                });
+            }
+            return CreateGannt;
+        })();
+    </script>
+</body>
+
+</html>
