@@ -48,7 +48,7 @@ def resources():
     return {}
 
 
-@app.route('/policy_list', methods=['get'])
+@app.route('/policy-list', methods=['get'])
 def policy_list():
     return [
         {'key': 'OP大类', 'title': 'OP大类',

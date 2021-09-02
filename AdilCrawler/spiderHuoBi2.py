@@ -4,9 +4,24 @@ from datetime import datetime
 from aiowebsocket.converses import AioWebSocket
 import gzip
 
+import requests
+
 """
 market.htusdt.trade.detail  请求 ht-ustd 实时交易价格
+
+08-17 00:06:45   value_usdt    2.3496
+08-14 00:00:50   atp_usdt     0.00319
+08-09 00:03:00   act_usdt  0.017599
+08-07 22:23:48   kan_usdt   0.005000
+08-07 00:55:04   ach_usdt   0.174260
+
 """
+
+
+currency_cate = [
+    {"start_time": "08-17 00:06:45", 'buy_in_price': "2.3496", "currency": "value_usdt"},
+]
+
 
 async def startup(uri):
     async with AioWebSocket(uri) as aws:
@@ -32,6 +47,11 @@ def main():
         asyncio.get_event_loop().run_until_complete(startup(remote))
     except KeyboardInterrupt as exc:
         logging.info('Quit.')
+
+
+class SpiderControl(object):
+    def __init__(self):
+        pass
 
 
 
