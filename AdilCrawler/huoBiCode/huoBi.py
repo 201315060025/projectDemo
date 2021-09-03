@@ -12,7 +12,7 @@ def handle(current_data, currency_data):
     buy_price = float(currency_data['buy_in_price'])
     new_price = float(current_data['close'])
     flag = (new_price - buy_price) / buy_price
-    return flag > 0.5
+    return flag > 0.9
 
 
 async def day_execute(uri,  parame):
@@ -63,6 +63,7 @@ async def startup(uri, ct, parame):
         converse = aws.manipulator
         # 最近24小时成交量、成交额、开盘价、收盘价、最高价、最低价、成交笔数等
         message = '{"sub":"market.' + ct + '.kline.1min","symbol":"' + ct + '", "id": "id1"}'
+        count = 0
         while True:
             await converse.send(message)
             # print('{time}-Client send: {message}'
@@ -77,22 +78,24 @@ async def startup(uri, ct, parame):
                 continue
 
             # 判断是否发短信
-            if handle(res['tick'], parame):
+            if handle(res['tick'], parame) and count == 0:
                 # 已经大雨30¥ 可以考虑卖出
                 name = parame["currency"].split('_')[0]
                 newPrice = res['tick']['close']
                 buy_price = float(parame['buy_in_price'])
                 rate = str(round((newPrice - buy_price) / buy_price, 3))
-                message = [f"{name}, {str(buy_price)}, {str(newPrice)}, {rate}"]
+                send_message = [f"{name}, {str(buy_price)}, {str(newPrice)}, {rate}"]
                 # 同时邮箱发送和 短信发送
-                SendMessageTool.send_message_by_email(message)
-                SendMessageTool.send_message_by_sms(message)
+                SendMessageTool.send_message_by_email(send_message)
+                SendMessageTool.send_message_by_sms(send_message)
+                count += 1
+                print(f'{parame["currency"]} 已经达到了增常率， 可以考虑出手')
 
-            await asyncio.sleep(1)
+            # await asyncio.sleep(2)
 
 async def get_data_from_huobi():
     print('12')
-    remote = 'wss://www.huobi.bo/-/s/pro/ws'
+    remote = 'wss://www.huobi.do/-/s/pro/ws'
     try:
         # task1 = asyncio.create_task(startup(remote, ct, parame))
         gather_list = []
@@ -102,11 +105,13 @@ async def get_data_from_huobi():
                 startup(remote, currency_data['currency'].replace('_', ''), currency_data)
             )
         # 2： 统计每个币种每天的变化趋势
-        gather_list.append(day_execute(remote, currency_cate))
+        # gather_list.append(day_execute(remote, currency_cate))
         await asyncio.gather(*gather_list)
     except KeyboardInterrupt as exc:
         logging.info('Quit.')
     # pass
 
 if __name__ == '__main__':
-    asyncio.run(get_data_from_huobi())
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(get_data_from_huobi())
+    # asyncio.run(get_data_from_huobi())
