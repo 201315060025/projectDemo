@@ -91,7 +91,7 @@ async def startup(uri, ct, parame):
                 count += 1
                 print(f'{parame["currency"]} 已经达到了增常率， 可以考虑出手')
 
-            # await asyncio.sleep(2)
+            await asyncio.sleep(1)
 
 async def get_data_from_huobi():
     print('12')
