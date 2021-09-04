@@ -15,6 +15,12 @@ def handle(current_data, currency_data):
     return flag > 0.9
 
 
+def cal_time(start_time:str, end_time:str)->str:
+    st = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
+    ed = datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
+    return str((ed-st).days)
+
+
 async def day_execute(uri,  parame):
     current_day = ""
     while True:
@@ -38,7 +44,10 @@ async def day_execute(uri,  parame):
                     newPrice = res['tick']['close']
                     buy_price = float(currency_data['buy_in_price'])
                     rate = str(round((newPrice - buy_price) / buy_price, 3))
-                    message = [f"{name},  {str(buy_price)},{str(newPrice)}, {rate}"]
+                    hold_money = currency_data['total_money']
+                    hold_time = cal_time(currency_data['start_time'], new_day + " 00:00:00")
+                    # name, 买入金额, 持有时间, 买入价, 当前价格, 增常率
+                    message = [f"{name},{hold_money}, {hold_time}, {str(buy_price)},{str(newPrice)}, {rate}"]
                     current_day_message.extend(message)
             current_day = new_day
             # 只发邮箱
@@ -105,7 +114,7 @@ async def get_data_from_huobi():
                 startup(remote, currency_data['currency'].replace('_', ''), currency_data)
             )
         # 2： 统计每个币种每天的变化趋势
-        # gather_list.append(day_execute(remote, currency_cate))
+        gather_list.append(day_execute(remote, currency_cate))
         await asyncio.gather(*gather_list)
     except KeyboardInterrupt as exc:
         logging.info('Quit.')

@@ -67,6 +67,8 @@ class SendMessageTool(object):
             <caption style='padding: 0 0 5px 0; width: 700px;text-align: right; font: italic 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; '> </caption>
             <tr> 
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>货币名称</th>
+            <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>持有金额</th>
+            <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>持有时间</th>
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>买入价</th>
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>当前价格</th>
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>增常率</th>
@@ -74,8 +76,6 @@ class SendMessageTool(object):
             {row_datas}
             </table> 
             """
-
-
             # new_message = "<div><table><tr><tb>货币名称</td><tb>买入价</td><tb>当前价格</td><tb>增常率</td></tr>{0}</table></div>"
             tmp_msg = ""
             tmp_tag = """
@@ -84,6 +84,8 @@ class SendMessageTool(object):
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{1}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{2}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{3}</td>
+            <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{4}</td>
+            <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{5}</td>
             </tr>
             """
             for i in message:
