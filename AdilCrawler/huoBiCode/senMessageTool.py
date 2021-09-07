@@ -65,7 +65,8 @@ class SendMessageTool(object):
             new_message = """
             <table cellspacing="0" style='width: 700px;padding: 0; margin: 0;'>
             <caption style='padding: 0 0 5px 0; width: 700px;text-align: right; font: italic 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; '> </caption>
-            <tr> 
+            <tr>
+            <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;;width:15px'></th> 
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>货币名称</th>
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>持有金额</th>
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>持有时间</th>
@@ -80,17 +81,20 @@ class SendMessageTool(object):
             tmp_msg = ""
             tmp_tag = """
             <tr>
-            <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{0}</td>
+            <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;width:15px'>{0}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{1}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{2}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{3}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{4}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{5}</td>
+            <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{7}</td>
             </tr>
             """
-            for i in message:
+            for idx, i in enumerate(message):
                 cp_tmp = deepcopy(tmp_tag)
-                tmp_msg += cp_tmp.format(*[str(j) for j in i.split(',') if j])
+                tmp_row = [str(j) for j in i.split(',') if j]
+                tmp_row.insert(0, str(idx+1))
+                tmp_msg += cp_tmp.format(*tmp_row)
             new_message = new_message.format(row_datas=tmp_msg)
 
             msg = MIMEText(new_message, 'html', 'utf-8')
