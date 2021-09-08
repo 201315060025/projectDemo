@@ -66,7 +66,7 @@ class SendMessageTool(object):
             <table cellspacing="0" style='width: 700px;padding: 0; margin: 0;'>
             <caption style='padding: 0 0 5px 0; width: 700px;text-align: right; font: italic 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; '> </caption>
             <tr>
-            <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;;width:15px'></th> 
+            <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;width:15px'></th> 
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>货币名称</th>
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>持有金额</th>
             <th scope="col" style='color: #4f6b72; border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; border-top: 1px solid #C1DAD7; letter-spacing: 2px; text-transform: uppercase; text-align: left; padding: 6px 6px 6px 12px; background: #CAE8EA  no-repeat;'>持有时间</th>
@@ -87,7 +87,7 @@ class SendMessageTool(object):
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{3}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{4}</td>
             <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{5}</td>
-            <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{7}</td>
+            <td class="row" style='border-right: 1px solid #C1DAD7; border-bottom: 1px solid #C1DAD7; background: #fff; font-size:11px; padding: 6px 6px 6px 12px; color: #4f6b72;'>{6}</td>
             </tr>
             """
             for idx, i in enumerate(message):

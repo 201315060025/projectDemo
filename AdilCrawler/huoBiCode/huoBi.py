@@ -1,7 +1,7 @@
 import asyncio, json, pickle, os
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from aiowebsocket.converses import AioWebSocket
 import gzip
 from senMessageTool import SendMessageTool
@@ -49,7 +49,6 @@ async def day_execute(uri,  parame):
                     # name, 买入金额, 持有时间, 买入价, 当前价格, 增常率
                     message = [f"{name},{hold_money}, {hold_time}, {str(buy_price)},{str(newPrice)}, {rate}"]
                     current_day_message.extend(message)
-            current_day = new_day
             # 只发邮箱
             SendMessageTool.send_message_by_email(current_day_message)
             # 同时保存一个记录
@@ -66,13 +65,26 @@ async def day_execute(uri,  parame):
             with open('data.pkl', 'wb') as ff:
                 pickle.dump(data, ff)
 
+            if len(current_day) == 0:
+                tmp_day = date(*[int(i) for i in new_day.split('-')]) + timedelta(days=1)
+                tmp_new_day = datetime(tmp_day.year, tmp_day.month, tmp_day.day)
+                sleep_time = (tmp_new_day - datetime.now()).seconds
+            else:
+                # 一天有多少秒
+                sleep_time = 24 * 60 * 60-2
+            current_day = new_day
+
+            await asyncio.sleep(sleep_time)
+
 
 async def startup(uri, ct, parame):
+    file = open('log', 'a+')
     async with AioWebSocket(uri) as aws:
         converse = aws.manipulator
         # 最近24小时成交量、成交额、开盘价、收盘价、最高价、最低价、成交笔数等
         message = '{"sub":"market.' + ct + '.kline.1min","symbol":"' + ct + '", "id": "id1"}'
         count = 0
+        start_minute = datetime.now().hour
         while True:
             await converse.send(message)
             # print('{time}-Client send: {message}'
@@ -80,11 +92,19 @@ async def startup(uri, ct, parame):
             mes = await converse.receive()
             mes1 = gzip.decompress(mes).decode("utf-8")
             res = json.loads(mes1)
-            dt = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
 
             if "tick" not in res:
                 # 请求开始 没有数据
+                # return
                 continue
+
+            # 每隔一个小时输出一条日志，主要是证明程序还在运行
+            currency_date = datetime.now().hour
+            if currency_date != start_minute:
+                print(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} {ct} ， 买入价格：{parame["buy_in_price"]}, 当前价格：{res["tick"]["close"]}', file=file)
+                start_minute = currency_date
+
 
             # 判断是否发短信
             if handle(res['tick'], parame) and count == 0:
