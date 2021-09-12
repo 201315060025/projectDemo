@@ -11,7 +11,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.utils import formataddr
 # 导入数据
-from config import SMSConfig, EmailConfig
+from config.config import SMSConfig, EmailConfig
 
 
 class SendMessageTool(object):

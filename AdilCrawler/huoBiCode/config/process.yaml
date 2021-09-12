@@ -1,0 +1,3 @@
+huoBi_monitor:
+  log: hobi_monitor.log
+  module: huoBi_monitor

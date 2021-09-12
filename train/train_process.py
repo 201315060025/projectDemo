@@ -89,6 +89,10 @@ def train4():
     mul_process.map_async(process_func_map, process_name)
 
 
+def fun_sleep():
+    time.sleep(6)
+    print(aa)
+
 
 if __name__ == "__main__":
     print("多进程 进程池 apply_async")
@@ -110,3 +114,21 @@ if __name__ == "__main__":
     print("\n"*2)
     print("多进程 进程池 map")
     train4()
+
+    # 进程监控
+    p1 = multiprocessing.Process(target=fun_sleep, args=(), name='test_sleep')
+    p1.start()
+    print(id(p1))
+    while True:
+        print(p1.name, p1.is_alive())
+        time.sleep(1)
+
+        if p1.is_alive() == False:
+            p1.terminate()
+            print("p1 已经结束 重新开始")
+            p1 = multiprocessing.Process(target=fun_sleep, args=(), name='test_sleep')
+            print(id(p1))
+            p1.start()
+
+            # p1.start()
+
