@@ -1,0 +1,8 @@
+FROM python:3.7
+LABEL maintainer="1392133729@qq.com"
+WORKDIR ./app
+COPY . .
+EXPOSE 5003
+RUN pip install -r requirements.txt
+ENV FLASK_APP app
+CMD ["flask","run","-h","0.0.0.0","-p","5003"]
